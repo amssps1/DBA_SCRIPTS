@@ -1,0 +1,123 @@
+-- remover ddm
+
+
+drop view vw_COF_ProcessoDadosBancarios_Cliente_Morada;
+go
+ALTER TABLE COF_Cliente  
+ALTER COLUMN [Nome] ADD MASKED WITH (FUNCTION = 'partial(1, "XXXXX", 0)');  
+
+ALTER TABLE COF_Cliente  
+ALTER COLUMN [PrimeiroNome] ADD MASKED WITH (FUNCTION = 'partial(1, "XXXXX", 0)');  
+
+ALTER TABLE COF_Cliente  
+ALTER COLUMN [UltimoNome]  ADD MASKED WITH (FUNCTION = 'partial(1, "XXXXX", 0)');
+
+ALTER TABLE COF_Cliente  
+ALTER COLUMN [NumContribuinte] ADD MASKED WITH (FUNCTION = 'partial(1, "XXXXX", 1)');
+
+create view vw_COF_ProcessoDadosBancarios_Cliente_Morada 
+...
+
+--
+ALTER TABLE COF_ContactoTelefonico  
+ALTER COLUMN [Numero]  ADD MASKED WITH (FUNCTION = 'default()');
+
+
+--------------------------------------------------------
+-- Drop Mask 
+--------------------------------------------------------
+drop view vw_COF_ProcessoDadosBancarios_Cliente_Morada;
+go
+
+ALTER TABLE COF_Cliente  
+ALTER COLUMN [Nome] DROP MASKED;  
+
+ALTER TABLE COF_Cliente  
+ALTER COLUMN [PrimeiroNome] DROP MASKED;    
+
+ALTER TABLE COF_Cliente  
+ALTER COLUMN [UltimoNome]  DROP MASKED;  
+
+ALTER TABLE COF_Cliente  
+ALTER COLUMN [NumContribuinte] DROP MASKED;  
+
+USE [IDH]
+GO
+
+/****** Object:  View [dbo].[vw_COF_ProcessoDadosBancarios_Cliente_Morada]    Script Date: 11/01/2024 14:42:17 ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+CREATE VIEW [dbo].[vw_COF_ProcessoDadosBancarios_Cliente_Morada]
+WITH SCHEMABINDING
+AS
+
+	WITH CTE AS (
+		SELECT DISTINCT cp.IDProcesso
+			,CP.NumProspect
+			,cp.TipoInterveniente
+			,c.IdCliente
+			,c.Nome
+			,cm.Morada
+			,cm.CodPostal1
+			,cm.CodPostal2
+			,cm.Localidade
+			,CP.Ordem
+			,pdb.RefADC
+			,CONCAT(pdb.PrefixoIBAN, pdb.NIB) IBAN
+			,b.Banco
+			,pdb.CodBanco
+		FROM dbo.COF_ProcessoDadosBancarios pdb
+			INNER JOIN dbo.COF_ClienteUProcesso CP ON cp.IDCliente = pdb.IDCliente 
+				AND cp.IDProcesso = pdb.IDProcesso
+			INNER JOIN dbo.COF_Cliente C ON c.IDCliente = pdb.IDCliente
+			INNER JOIN dbo.COF_ClienteMorada CM ON cm.IDCliente = c.IDCliente 
+				AND CM.Active = 1
+			LEFT JOIN dbo.COF_Banco b ON b.CodBanco = pdb.CodBanco
+		WHERE NULLIF(pdb.NIB, '') IS NOT NULL
+	)
+	SELECT t2.NumIBAN + 1 AS NumIBAN
+		  ,t.Ordem
+		  ,t.IDProcesso
+		  ,t.NumProspect
+		  ,t.TipoInterveniente
+		  ,t.IdCliente
+		  ,t.Nome
+		  ,t.Morada
+		  ,t.CodPostal1
+		  ,t.CodPostal2
+		  ,t.Localidade
+		  ,t.RefADC
+		  ,t.IBAN
+		  ,t.Banco
+		  ,t.CodBanco
+	FROM CTE t
+		CROSS APPLY ( SELECT COUNT(DISTINCT ISNULL(i.RefADC, 0)) NumIBAN
+					  FROM CTE AS i 
+					  WHERE i.IDProcesso = t.IDProcesso 
+					  AND ISNULL(i.RefADC, 0) < ISNULL(t.RefADC, 0) ) AS t2
+
+--SELECT DISTINCT DENSE_RANK() OVER (PARTITION BY pdb.IdProcesso ORDER BY pdb.IdProcesso, CONCAT(cp.Ordem, pdb.NIB)) NumIBAN, cp.Ordem, 
+--		cp.IDProcesso, CP.NumProspect,
+--		cp.TipoInterveniente, pdb.IdCliente, (SELECT Nome FROM dbo.COF_Cliente WHERE IDCliente = pdb.IDCliente) Nome, cm.Morada, cm.CodPostal1, cm.CodPostal2, cm.Localidade, 
+--		RefADC, CONCAT(PrefixoIBAN, NIB) IBAN, (SELECT Banco FROM dbo.COF_Banco WHERE CodBanco = pdb.CodBanco) Banco, pdb.CodBanco
+--FROM dbo.COF_ProcessoDadosBancarios pdb
+--INNER JOIN dbo.COF_ClienteUProcesso CP WITH (NOLOCK) ON cp.IDCliente = pdb.IDCliente AND pdb.IDProcesso = cp.IDProcesso
+--INNER JOIN dbo.COF_ClienteMorada CM WITH (NOLOCK) ON cm.IDCliente = pdb.IDCliente AND Active = 1
+--WHERE NULLIF(NIB, '') IS NOT NULL
+
+GO
+
+
+
+
+--
+ALTER TABLE COF_ContactoTelefonico  
+ALTER COLUMN [Numero]  DROP MASKED;  
+
+
+
