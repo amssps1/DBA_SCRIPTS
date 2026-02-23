@@ -1,0 +1,61 @@
+
+
+Contas de Serviço:
+
+
+
+Nornas:
+
+- Engine: cofidis2000\dev_sql_eng_nornas    Pass: w1370m6VDIsYBnkrjRv}C3B
+NT Service\MSSQLSERVER
+- Agente: cofidis2000\dev_sql_agt_nornas    Pass: F3H(Da(N6et{ILjx)X53(K4
+NT Service\SQLSERVERAGENT
+
+GRANI:
+
+- Engine: cofidis20000\dev_sql_eng_grani   Pass: )G{L0[4]EXOwek0Wpe4jt9n
+- Agente: cofidis2000\dev_sql_agt_grani	   Pass: onlj5tzXE>u6v0P0MlcPgmW
+
+
+CSADSQL01:
+
+- Engine: cofidis20000\dev_sql_eng_csa01   Pass: oaajCqW<MUpW<Bb6ckBImqB
+- Agente: cofidis2000\dev_sql_agt_csa01	   Pass: CUYi8}kRrpquvpIJ)wT[Exe
+
+
+CSADSQL01\TFSTODB
+
+ - Engine: cofidis20000\dev_sql_eng_csatd   Pass: shFr(HYr0ScdGF9)dYEva4i
+- Agente: cofidis2000\dev_sql_agt_csatd	   Pass: Cr8d6kOT9GpL9OQbAI7hp[N
+
+
+ALEU
+
+ - Engine: cofidis20000\dev_sql_eng_aleu   Pass: XSjHGCK3KZA]Ft2RjdSl0R]
+- Agente: cofidis2000\dev_sql_agt_aleu	   Pass: fb46F>BtLD0[Z7[4BaqvvDY
+
+COFPTDSISQUAL
+
+Login: dev_sql_eng_sisq      Pass: W57qfGPB8zgGH9V1He8O32U
+
+
+
+-----------------------------------------------   
+
+UAT
+
+UATPERSEU
+
+    Login: uat_sqleng_uatperseu     Pass: 2(FCoP2iBlBj[wjAjfYMQ0F
+	
+    Login: uat_sqlagt_uatperseu     Pass: mSqnnA{wEe>CcE4>H8HoURz
+	--
+	
+    Login: uat_sqleng_uatcarlsb     Pass: Ru>[PX1tE[Gj1RvYvjXJGr8
+	Login: uat_sqlagt_uatcarlsb		Pass: YE8a>MOW0GTaHSNvqv64(RA
+	
+	
+	---
+	Login: uat_sqleng_uatdw  		Pass: EoL8fn[sHhltzDKtr(ldjl7
+	Login: uat_sqlagt_uatdw			Pass: JjP3cbDXlOeRiXP7RVW<xlI
+  

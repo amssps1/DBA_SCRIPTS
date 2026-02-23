@@ -1,0 +1,9 @@
+
+
+
+alter authorization on schema::TestDataAsStringFunc
+to dbo
+go
+
+drop user [CDM\MARQUEMC]
+go

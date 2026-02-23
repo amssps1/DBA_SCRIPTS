@@ -1,0 +1,40 @@
+
+
+Contas de Serviço:
+
+
+
+Nornas:
+
+- Engine: cofidis2000\dev_sql_eng_nornas    Pass: w1370m6VDIsYBnkrjRv}C3B
+
+- Agente: cofidis2000\dev_sql_agt_nornas    Pass: F3H(Da(N6et{ILjx)X53(K4
+
+
+GRANI:
+
+- Engine: cofidis20000\dev_sql_eng_grani   Pass: )G{L0[4]EXOwek0Wpe4jt9n
+- Agente: cofidis2000\dev_sql_agt_grani	   Pass: onlj5tzXE>u6v0P0MlcPgmW
+
+
+CSADSQL01:
+
+- Engine: cofidis20000\dev_sql_eng_csa01   Pass: oaajCqW<MUpW<Bb6ckBImqB
+- Agente: cofidis2000\dev_sql_agt_csa01	   Pass: CUYi8}kRrpquvpIJ)wT[Exe
+
+
+CSADSQL01\TFSTODB
+
+ - Engine: cofidis20000\dev_sql_eng_csatd   Pass: shFr(HYr0ScdGF9)dYEva4i
+- Agente: cofidis2000\dev_sql_agt_csatd	   Pass: Cr8d6kOT9GpL9OQbAI7hp[N
+
+
+ALEU
+
+ - Engine: cofidis20000\dev_sql_eng_aleu   Pass: XSjHGCK3KZA]Ft2RjdSl0R]
+- Agente: cofidis2000\dev_sql_agt_aleu	   Pass: fb46F>BtLD0[Z7[4BaqvvDY
+
+
+
+
+
