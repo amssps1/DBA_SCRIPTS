@@ -1,0 +1,63 @@
+
+
+-- CPU - Queries mais pesadas 
+
+SELECT TOP 10
+    r.session_id,
+    r.status,
+    r.cpu_time AS CPU_Time_MS,
+    r.total_elapsed_time AS Elapsed_Time_MS,
+    r.logical_reads AS LogicalReads,
+    r.reads AS PhysicalReads,
+    r.writes AS Writes,
+    t.text AS SQLText,
+    qp.query_plan
+FROM sys.dm_exec_requests r
+JOIN sys.dm_exec_query_stats qs ON r.plan_handle = qs.plan_handle
+CROSS APPLY sys.dm_exec_sql_text(qs.sql_handle) t
+CROSS APPLY sys.dm_exec_query_plan(qs.plan_handle) qp
+ORDER BY r.cpu_time DESC;
+
+
+-- Memória, queries mais pesadas
+
+SELECT 
+    r.session_id,
+    r.status,
+    r.memory_usage * 8 AS Memory_Used_KB, -- Memory usage in KB
+    t.text AS SQLText
+FROM sys.dm_exec_requests r
+JOIN sys.dm_exec_sessions s ON r.session_id = s.session_id
+CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) t
+ORDER BY r.memory_usage DESC;
+
+-- I/O intensivo
+
+SELECT TOP 10
+    r.session_id,
+    r.status,
+    r.cpu_time AS CPU_Time_MS,
+    r.total_elapsed_time AS Elapsed_Time_MS,
+    r.logical_reads AS LogicalReads,
+    r.reads AS PhysicalReads,
+    r.writes AS Writes,
+    t.text AS SQLText
+FROM sys.dm_exec_requests r
+CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) t
+ORDER BY r.reads DESC, r.writes DESC;
+
+
+-- Blocking
+
+SELECT 
+    blocking_session_id AS BlockingSession,
+    session_id AS BlockedSession,
+    wait_type,
+    wait_time,
+    wait_resource,
+    t.text AS SQLText
+FROM sys.dm_exec_requests r
+JOIN sys.dm_exec_sessions s ON r.blocking_session_id = s.session_id
+CROSS APPLY sys.dm_exec_sql_text(r.sql_handle) t
+WHERE r.blocking_session_id <> 0
+ORDER BY wait_time DESC;

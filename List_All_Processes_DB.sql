@@ -1,0 +1,1 @@
+SELECT * FROM sys.sysprocesses WHERE dbid = db_id('db_cofidis_dah')
