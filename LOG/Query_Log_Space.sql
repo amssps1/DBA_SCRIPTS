@@ -1,0 +1,4 @@
+
+DBCC SQLPERF(LOGSPACE)
+
+
