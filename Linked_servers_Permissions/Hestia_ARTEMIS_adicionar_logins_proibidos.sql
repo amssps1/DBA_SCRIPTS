@@ -1,0 +1,16 @@
+
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\amaromg', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\borgesfr', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\castrora', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\duartebe', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\eduardsa', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\goncalrc', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\luzpe', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\mendesjr', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\moraisda', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\rodrigpa', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\rolhoma', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\silvabu', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\silvaru', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+EXEC master.dbo.sp_addlinkedsrvlogin @rmtsrvname = N'ARTEMIS,1515', @locallogin = N'cdm\sintraan', @useself = N'False', @rmtuser = N'xx', @rmtpassword = N'xx'
+go 
