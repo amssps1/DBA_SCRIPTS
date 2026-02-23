@@ -1,0 +1,26 @@
+BACKUP DATABASE RapComDif
+TO DISK = 'Y:\BACKUP\RapComDif.bak'
+WITH INIT
+Go
+ 
+--Run Log Backup
+BACKUP Log RapComDif
+TO DISK = 'Y:\BACKUP\RapComDif_log.trn'
+WITH INIT
+
+
+
+----
+-- EOS
+--RESTORE Full Backup
+RESTORE DATABASE RapComDif
+FROM DISK = 'Y:\BACKUP\RapComDif.bak' 
+ WITH NORECOVERY,
+ MOVE 'RapComDif' TO 'Y:\DATA\RapComDif.mdf',
+ MOVE 'RapComDif_log' TO 'L:\Log\RapComDifx_log.ldf'
+ GO
+ 
+--RESTORE TLog Backup
+RESTORE DATABASE RapComDif
+FROM DISK = 'Y:\BACKUP\RapComDif_log.trn' 
+ WITH NORECOVERY

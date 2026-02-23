@@ -1,0 +1,79 @@
+--  Parâmetros
+DECLARE @BackupHoje NVARCHAR(500)      = N'H:\Backup_Dia';
+DECLARE @BackupRetencao NVARCHAR(500)  = N'H:\Backup_Retencao';
+DECLARE @HojeData NVARCHAR(8)          = CONVERT(CHAR(8), GETDATE(), 112); -- YYYYMMDD
+DECLARE @HoraData NVARCHAR(6)          = REPLACE(CONVERT(CHAR(8), GETDATE(), 108), ':', ''); -- HHMMSS
+DECLARE @DateTimeSufixo NVARCHAR(20)   = @HojeData + '_' + @HoraData;
+
+--  Ativar xp_cmdshell se necessário
+EXEC sp_configure 'show advanced options', 1;
+RECONFIGURE;
+EXEC sp_configure 'xp_cmdshell', 1;
+RECONFIGURE;
+
+--  Mover backups FULL antigos (anteriores a hoje) para subpastas de retenção
+BEGIN TRY
+    DECLARE @MoveCMD NVARCHAR(1000) = '
+        forfiles /P "' + @BackupHoje + '" /S /M *.bak /D -1 /C "cmd /c (
+            for %%F in (@file) do (
+                set ""f=%%~fF""
+                setlocal enabledelayedexpansion
+                for /f %%B in (''echo @file ^| findstr /r \"^[^_]*\"'') do (
+                    set ""base=%%B""
+                    set ""dest=' + @BackupRetencao + '\@fdate\%%B""
+                    mkdir !dest!
+                    move /Y !f! !dest!
+                )
+                endlocal
+            )
+        )"
+    ';
+    EXEC xp_cmdshell @MoveCMD;
+END TRY
+BEGIN CATCH
+    PRINT '⚠️ Erro ao mover backups antigos: ' + ERROR_MESSAGE();
+END CATCH;
+
+--  Cursor para bases online (não sistema)
+DECLARE @DBName SYSNAME;
+DECLARE @BackupFile NVARCHAR(1000);
+DECLARE @SQL NVARCHAR(MAX);
+
+DECLARE db_cursor CURSOR FOR
+SELECT name
+FROM sys.databases
+WHERE database_id > 4 -- exclui bases de sistema
+  AND state_desc = 'ONLINE';
+
+OPEN db_cursor;
+FETCH NEXT FROM db_cursor INTO @DBName;
+
+WHILE @@FETCH_STATUS = 0
+BEGIN
+    BEGIN TRY
+        -- Cria subpasta para a base no diretório do dia
+        DECLARE @CreateFolder NVARCHAR(500) = 
+            'IF NOT EXIST "' + @BackupHoje + '\' + @DBName + '" mkdir "' + @BackupHoje + '\' + @DBName + '"';
+        EXEC xp_cmdshell @CreateFolder;
+
+        -- Caminho final do ficheiro de backup
+        SET @BackupFile = @BackupHoje + '\' + @DBName + '\' + @DBName + '_full_' + @DateTimeSufixo + '.bak';
+
+        -- Comando de backup
+        SET @SQL = '
+            BACKUP DATABASE [' + @DBName + ']
+            TO DISK = N''' + @BackupFile + '''
+            WITH INIT, COMPRESSION, STATS = 5, NAME = N''Full Backup of ' + @DBName + '''';
+
+        PRINT ' Backup FULL: ' + @DBName + ' → ' + @BackupFile;
+        EXEC sp_executesql @SQL;
+    END TRY
+    BEGIN CATCH
+        PRINT 'Erro no backup da base ' + @DBName + ': ' + ERROR_MESSAGE();
+    END CATCH;
+
+    FETCH NEXT FROM db_cursor INTO @DBName;
+END
+
+CLOSE db_cursor;
+DEALLOCATE db_cursor;

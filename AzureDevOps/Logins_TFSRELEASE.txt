@@ -1,0 +1,13 @@
+
+
+Contas tfsrelease
+
+
+
+cofidis2000\svc_deploy_dev
+
+cofidis2000\svc_deploy_sit
+
+cofidis2000\svc_deploy_uat
+
+cofidis2000\svc_deploy_prod

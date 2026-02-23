@@ -1,0 +1,9 @@
+BACKUP LOG db_cofidis_dah
+TO DISK = N'E:\BACKUP\CobrancasDAH_Log_20250512_1012.bak'
+WITH INIT, COMPRESSION, STATS = 10;
+
+
+USE [CobrancasDAH]
+GO
+DBCC SHRINKFILE (N'CobrancasDAH_Log' , 0, TRUNCATEONLY)
+GO

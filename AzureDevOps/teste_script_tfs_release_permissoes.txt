@@ -1,0 +1,94 @@
+DECLARE @LoginName SYSNAME = '#{Cofidis.User.Svc_Deploy}#';
+DECLARE @SQL NVARCHAR(MAX) = '';
+DECLARE @DBName SYSNAME;
+
+-- Permissões no nível do servidor para criar base de dados (não está previsto o drop database, apenas caso seja necessário em ambientes não produtivos)
+
+USE [master];
+GRANT CREATE ANY DATABASE TO [' + @LoginName + '];
+GRANT VIEW ANY DEFINITION TO [' + @LoginName + '];
+
+-- Cursor para todas as bases de dados de Utilizador
+DECLARE db_cursor CURSOR FOR
+SELECT name
+FROM sys.databases
+WHERE state_desc = 'ONLINE'
+  AND name NOT IN ('master', 'tempdb', 'model', 'msdb', 'distribution');
+
+OPEN db_cursor;
+FETCH NEXT FROM db_cursor INTO @DBName;
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		SET @SQL = '
+	USE [' + QUOTENAME(@DBName) + '];
+
+	-- Criar user na base de dados
+	IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = ''' + @LoginName + ''')
+		CREATE USER [' + @LoginName + '] FOR LOGIN [' + @LoginName + '];
+
+	-- Permissões para deploy e manipulação de dados (sem DELETE)
+	GRANT VIEW DEFINITION TO [' + @LoginName + '];
+	GRANT CREATE TABLE TO [' + @LoginName + '];
+	GRANT CREATE PROCEDURE TO [' + @LoginName + '];
+	GRANT CREATE FUNCTION TO [' + @LoginName + '];
+	GRANT CREATE VIEW TO [' + @LoginName + '];
+
+	-- Permissões nos schemas
+	DECLARE @SchemaName SYSNAME;
+	DECLARE schema_cursor CURSOR FOR
+	SELECT name FROM sys.schemas WHERE name NOT IN (''sys'', ''INFORMATION_SCHEMA'');
+
+	OPEN schema_cursor;
+	FETCH NEXT FROM schema_cursor INTO @SchemaName;
+
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+		-- Permissões para criar objetos no schema
+		EXEC(''GRANT CREATE ON SCHEMA::[' + @SchemaName + '] TO [' + @LoginName + '];'');
+
+		-- Permissões para inserir e atualizar dados em objetos do schema
+		EXEC(''GRANT SELECT,INSERT, UPDATE ON SCHEMA::[' + @SchemaName + '] TO [' + @LoginName + '];'');
+
+		FETCH NEXT FROM schema_cursor INTO @SchemaName;
+	END
+
+	CLOSE schema_cursor;
+	DEALLOCATE schema_cursor;
+	';
+    EXEC sp_executesql @SQL;
+    FETCH NEXT FROM db_cursor INTO @DBName;
+END
+
+CLOSE db_cursor;
+DEALLOCATE db_cursor;
+
+--- MSDB 
+USE [msdb]
+GO
+DROP SCHEMA IF EXISTS [' + @LoginName + '];
+DROP USER IF EXISTS [' + @LoginName + '];
+go
+IF NOT EXISTS (SELECT NAME FROM sys.database_principals WHERE NAME =  '#{Cofidis.User.Svc_Deploy}#') BEGIN CREATE USER  [' + @LoginName + ']
+   FOR LOGIN [' + @LoginName + ']; 
+END 
+ELSE ALTER USER  [' + @LoginName + '] WITH LOGIN = [' + @LoginName + '];
+IF DATABASE_PRINCIPAL_ID('#{Cofidis.User.Svc_Deploy}#') IS NOT NULL GRANT CONNECT TO [' + @LoginName + ']
+exec sp_addrolemember 'SQLAgentOperatorRole', '#{Cofidis.User.Svc_Deploy}#'
+exec sp_addrolemember 'db_ssisoperator', '#{Cofidis.User.Svc_Deploy}#'
+exec sp_addrolemember 'db_ssisltduser', '#{Cofidis.User.Svc_Deploy}#'
+exec sp_addrolemember 'db_datareader', '#{Cofidis.User.Svc_Deploy}#'
+----
+--SSISDB
+USE [SSISDB]
+GO
+DROP USER IF EXISTS [' + @LoginName + ']
+go
+IF NOT EXISTS (SELECT NAME FROM sys.database_principals WHERE NAME =  '#{Cofidis.User.Svc_Deploy}#') BEGIN CREATE USER  [' + @LoginName + ']
+   FOR LOGIN [COFIDIS2000\GRP_SQL_ARQUITECTOS] END ELSE ALTER USER  [' + @LoginName + '] WITH LOGIN = [' + @LoginName + '];
+IF DATABASE_PRINCIPAL_ID('#{Cofidis.User.Svc_Deploy}#') IS NOT NULL GRANT CONNECT TO [' + @LoginName + ']
+
+ALTER ROLE [db_datareader] ADD MEMBER [' + @LoginName + ']
+GO
+ALTER ROLE [ssis_admin] ADD MEMBER [' + @LoginName + ']
+GO
