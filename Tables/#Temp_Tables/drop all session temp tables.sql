@@ -1,0 +1,11 @@
+DECLARE @sql NVARCHAR(MAX) = N''
+
+SELECT
+
+@sql = @sql + CHAR(10) + N'DROP TABLE ' + QUOTENAME([TABLE_SCHEMA]) + '.' + QUOTENAME([TABLE_NAME])
+
+FROM [tempdb].[INFORMATION_SCHEMA].[TABLES]
+WHERE [TABLE_NAME] LIKE '#%'
+PRINT @sql
+
+--EXEC sp_executesql @sql

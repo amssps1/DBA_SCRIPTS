@@ -1,0 +1,6 @@
+
+SETSPN -S  MSSQLSvc/trinity:1433 cofidis2000\dev_sql_trinity_eng 
+SETSPN -S  MSSQLSvc/trinity.cofidis.pt:1433 cofidis2000\dev_sql_trinity_eng
+
+SETSPN -S  MSSQLSvc/trinity cofidis2000\dev_sql_trinity_eng 
+SETSPN -S  MSSQLSvc/trinity.cofidis.pt cofidis2000\dev_sql_trinity_eng
